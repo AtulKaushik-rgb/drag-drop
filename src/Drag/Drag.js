@@ -1,4 +1,4 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState,useEffect } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import "./Drag.css";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -7,15 +7,19 @@ import uuid from "react-uuid";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import axios from 'axios';
+import Loader from 'react-loader-spinner'
 
 const Drag = () => {
   
   const [choicesCount, setChoicesCount] = useState(0);
   const [chosenCount, setChosenCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
 
+  //get random 10 users and add it to available choices
   useEffect(async()=>{
     try {
+      setLoading(true);
       const data = await axios.get('https://randomuser.me/api?page=1&results=10');
       let names = data.data.results.map(obj=>obj.name)
       names.forEach( element=> {
@@ -28,10 +32,11 @@ const Drag = () => {
         }
       })
 
-      console.log(nameObj)
+
 
       
       setChoices(nameObj);
+      setLoading(false);
     } catch (err) {
     //  alert(err)
     }
@@ -65,10 +70,6 @@ const Drag = () => {
 
     setChoices(unCheckedArray);
 
-
-
-    
-
     //set checked to false and add it to chosen
     checkedArray = checkedArray.map((obj) => {
       obj.checked = false;
@@ -76,9 +77,7 @@ const Drag = () => {
       return obj;
     });
 
-    console.log(checkedArray);
-    //console.log(chosen);
-    //allCheckBox.current.checked = false;
+
     setChoicesCount((choicesCount) => choicesCount - checkedArray.length);
     setChosen([...checkedArray, ...chosen]);
   };
@@ -93,8 +92,6 @@ const Drag = () => {
 
     setChosen(unCheckedArray);
 
-
-
     //set checked to false and add it to chosen
     checkedArray = checkedArray.map((obj) => {
       obj.checked = false;
@@ -102,10 +99,8 @@ const Drag = () => {
       return obj;
     });
 
-    console.log(checkedArray);
-    //allCheckBox.current.checked = false;
+
     setChosenCount((chosenCount) => chosenCount - checkedArray.length);
-    //console.log(chosen);
     setChoices([...checkedArray, ...choices]);
   };
 
@@ -120,8 +115,7 @@ const Drag = () => {
   };
 
   const onCheckedChoicesHandler = (e) => {
-    console.log(e.target.name);
-    //let newArray = Array.from(choices);
+
     let newArray = Array.from(choices).map((obj) => {
       if (obj.title === e.target.name) obj.checked = !obj.checked;
 
@@ -131,13 +125,10 @@ const Drag = () => {
     if (e.target.checked) setChoicesCount(choicesCount + 1);
     else setChoicesCount(choicesCount - 1);
 
-    //console.log(choices[e.target.name].checked);
     setChoices(newArray);
   };
 
   const onCheckedChosenHandler = (e) => {
-    console.log(e.target.name);
-    //let newArray = Array.from(choices);
     let newArray = Array.from(chosen).map((obj) => {
       if (obj.title === e.target.name) obj.checked = !obj.checked;
 
@@ -147,7 +138,6 @@ const Drag = () => {
     if (e.target.checked) setChosenCount(chosenCount + 1);
     else setChosenCount(chosenCount - 1);
 
-    //console.log(choices[e.target.name].checked);
     setChosen(newArray);
   };
 
@@ -181,7 +171,6 @@ const Drag = () => {
   };
 
   const updateAllChosen = (e) => {
-    console.log('hello');
     let newArray = null;
     if (e.target.checked) {
       newArray = Array.from(chosen).map((obj) => {
@@ -199,22 +188,13 @@ const Drag = () => {
 
     if (e.target.checked)
     {
-      
-      //console.log(allCheckBox.current.checked);
       setChosenCount(newArray.length);
     } 
     else setChosenCount(0);
-    console.log('about to log all checkbox');
-
-    
-
-    //console.log(allCheckBox.current);
 
     setChosen(newArray);
   };
 
-  // console.log(choices);
-  // console.log(chosen);
 
   return (
     <div className='drag-container'>
@@ -239,6 +219,13 @@ const Drag = () => {
             <Droppable droppableId={uuid()}>
               {(provided) => (
                 <div>
+                  {loading && <div className='loader'>
+                    <Loader
+                    type="ThreeDots"
+                    ></Loader>
+                    Loading Choices...
+                    </div>}
+                  {!loading&&
                   <ul
                     className="container"
                     {...provided.droppableProps}
@@ -274,6 +261,7 @@ const Drag = () => {
                     })}
                     {provided.placeholder}
                   </ul>
+                  }
                 </div>
               )}
             </Droppable>
