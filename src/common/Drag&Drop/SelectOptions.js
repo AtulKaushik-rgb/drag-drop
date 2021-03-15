@@ -15,7 +15,21 @@ const SelectOptions = ({ data }) => {
 
   //get random 10 users and add it to available choices
   useEffect(() => {
-    if (data) setChoices(data);
+
+    if (data){
+      data.forEach((element) => {
+        element.checked = false;
+      });
+
+      let dataObj = data.map((obj) => {
+        return {
+          title: obj.first,
+          checked: obj.checked,
+        };
+      });
+
+      setChoices(dataObj);
+    } 
 
     setChosen([]);
   }, [data]);

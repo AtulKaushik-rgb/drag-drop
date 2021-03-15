@@ -8,21 +8,13 @@ const App = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        //get random 10 choices(usernames)
+        //Just pass options to the drag and drop.
         const data = await axios.get(
           "https://randomuser.me/api?page=1&results=10"
         );
         let names = data.data.results.map((obj) => obj.name);
-        names.forEach((element) => {
-          element.checked = false;
-        });
-        let nameObj = names.map((obj) => {
-          return {
-            title: obj.first,
-            checked: obj.checked,
-          };
-        });
-        setOptions(nameObj);
+        setOptions(names);
+
       } catch (err) {
         //  alert(err)
       }
