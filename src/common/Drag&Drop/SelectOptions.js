@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Checkbox from "@material-ui/core/Checkbox";
-import "./SelectOptions.css";
+//import "./SelectOptions.css";
+import useStyles from '../../dragTheme';
+import {GreenCheckbox,StyledButton} from '../../dragTheme';
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Button } from "@material-ui/core";
 import uuid from "react-uuid";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import PropTypes from 'prop-types';
 
 const SelectOptions = ({ data }) => {
   const [choicesCount, setChoicesCount] = useState(0);
@@ -13,10 +15,11 @@ const SelectOptions = ({ data }) => {
   const [choices, setChoices] = useState([]);
   const [chosen, setChosen] = useState([]);
 
+  const classes = useStyles();
+
   //get random 10 users and add it to available choices
   useEffect(() => {
-
-    if (data){
+    if (data) {
       data.forEach((element) => {
         element.checked = false;
       });
@@ -29,7 +32,7 @@ const SelectOptions = ({ data }) => {
       });
 
       setChoices(dataObj);
-    } 
+    }
 
     setChosen([]);
   }, [data]);
@@ -169,14 +172,13 @@ const SelectOptions = ({ data }) => {
   };
 
   return (
-    <div className="drag-container">
-      <div className="dnd-container">
-        <div className="checkboxes">
-          <div className="all-section">
+    <div className={classes.dragContainer}>
+      <div className={classes.dndContainer}>
+        <div className={classes.checkboxes}>
+          <div className={classes.allSection}>
             <div>
-              <Checkbox
+              <GreenCheckbox
                 onChange={updateAllChoices}
-                inputProps={{ "aria-label": "primary checkbox" }}
                 checked={
                   choicesCount === choices.length && choices.length > 0
                     ? true
@@ -195,7 +197,7 @@ const SelectOptions = ({ data }) => {
               {(provided) => (
                 <div>
                   <ul
-                    className="container"
+                    className={classes.container}
                     {...provided.droppableProps}
                     ref={provided.innerRef}
                   >
@@ -208,18 +210,19 @@ const SelectOptions = ({ data }) => {
                         >
                           {(provided) => (
                             <li
-                              className="checkbox-container"
+                              className={classes.checkboxContainer}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               ref={provided.innerRef}
                             >
-                              <Checkbox
+                              <GreenCheckbox
+                                className={classes.checkbox_style}
                                 checked={choice.checked}
                                 name={choice.title}
                                 onChange={onCheckedChoicesHandler}
-                                inputProps={{
-                                  "aria-label": "primary checkbox",
-                                }}
+                                // inputProps={{
+                                //   "aria-label": "secondary checkbox",
+                                // }}
                               />
                               <label>{choice.title}</label>
                             </li>
@@ -235,30 +238,30 @@ const SelectOptions = ({ data }) => {
           </DragDropContext>
         </div>
 
-        <div className="btn-container">
+        <div className={classes.btnContainer}>
           <Button
+            className={classes.greenButton}
             variant="contained"
             disabled={!choicesCount}
-            color="primary"
             onClick={transferToRight}
           >
             <ChevronRightIcon />
           </Button>
           <Button
+            className={classes.greenButton}
             variant="contained"
             disabled={!chosenCount}
-            color="primary"
             onClick={transferToLeft}
           >
             <ChevronLeftIcon />
           </Button>
         </div>
 
-        <div className="checkboxes">
-          <div className="all-section">
+        <div className={classes.checkboxes}>
+          <div className={classes.allSection}>
             <div>
-              <Checkbox
-                inputProps={{ "aria-label": "primary checkbox" }}
+              <GreenCheckbox
+                //inputProps={{ "aria-label": "secondary checkbox" }}
                 onChange={updateAllChosen}
                 checked={
                   chosenCount === chosen.length && chosen.length ? true : false
@@ -266,7 +269,7 @@ const SelectOptions = ({ data }) => {
               />
               <label>Chosen</label>
             </div>
-            <p>
+            <p className='count-label'>
               {chosenCount}/{chosen.length} selected
             </p>
           </div>
@@ -276,7 +279,7 @@ const SelectOptions = ({ data }) => {
               {(provided) => (
                 <div>
                   <ul
-                    className="container"
+                    className={classes.container}
                     {...provided.droppableProps}
                     ref={provided.innerRef}
                   >
@@ -289,18 +292,19 @@ const SelectOptions = ({ data }) => {
                         >
                           {(provided) => (
                             <li
-                              className="checkbox-container"
+                              className={classes.checkboxContainer}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               ref={provided.innerRef}
                             >
-                              <Checkbox
+                              <GreenCheckbox
+                              className={classes.checkbox_style}
                                 checked={chosen.checked}
                                 name={chosen.title}
                                 onChange={onCheckedChosenHandler}
-                                inputProps={{
-                                  "aria-label": "primary checkbox",
-                                }}
+                                // inputProps={{
+                                //   "aria-label": "primary checkbox",
+                                // }}
                               />
                               <label>{chosen.title}</label>
                             </li>
@@ -318,6 +322,10 @@ const SelectOptions = ({ data }) => {
       </div>
     </div>
   );
+};
+
+SelectOptions.propTypes = {
+  data: PropTypes.array.isRequired
 };
 
 export default SelectOptions;
